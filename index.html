@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Care Navigator · Early access for NYC families</title>
+<meta name="description" content="A care plan for your whole family, and an agent that books the visits. A Cornell Tech student pilot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --page: #e8edeb;
+  --bg: #ffffff;
+  --ink: #102c38;
+  --muted: #52636b;
+  --line: #d2dbd8;
+  --soft: #f3f6f4;
+  --teal: #087f82;
+  --teal-dark: #04606a;
+  --tint: #e7f3f1;
+  --warn: #b4553c;
+  --font: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; min-height: 100%; }
+body { background: var(--page); color: var(--ink); font-family: var(--font); font-size: 16px; line-height: 1.45; -webkit-font-smoothing: antialiased; }
+.phone { max-width: 440px; min-height: 100vh; margin: 0 auto; background: var(--bg); display: flex; flex-direction: column; }
+@media (min-width: 560px) {
+  body { padding: 24px 0; }
+  .phone { min-height: calc(100vh - 48px); border-radius: 28px; border: 1px solid var(--line); box-shadow: 0 24px 60px -30px rgba(16, 44, 56, .35); overflow: hidden; }
+}
+.preview { margin: 12px 20px 0; font-size: 12.5px; color: var(--muted); background: #fdefdc; border-radius: 10px; padding: 8px 12px; }
+.screen { flex: 1; display: none; flex-direction: column; gap: 18px; padding: 22px 22px 26px; }
+.screen.on { display: flex; }
+.top { display: flex; align-items: center; justify-content: space-between; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+.logo i { width: 30px; height: 30px; border-radius: 9px; background: var(--teal); display: grid; place-items: center; }
+.logo i::before, .logo i::after { content: ""; position: absolute; background: #fff; border-radius: 2px; }
+.logo i { position: relative; }
+.logo i::before { width: 14px; height: 4px; }
+.logo i::after { width: 4px; height: 14px; }
+.back { border: 0; background: var(--soft); width: 40px; height: 40px; border-radius: 12px; font-size: 20px; color: var(--ink); cursor: pointer; }
+.track { height: 5px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.track b { display: block; height: 100%; background: var(--teal); width: 0; transition: width .35s ease; }
+.kicker { font-size: 12.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--teal); }
+h1 { margin: 0; font-size: 30px; line-height: 1.1; font-weight: 900; letter-spacing: -.02em; text-wrap: balance; }
+h1.hero { font-size: 36px; }
+.sub { margin: -6px 0 0; color: var(--muted); font-size: 16.5px; }
+.small { font-size: 13px; color: var(--muted); }
+.spacer { flex: 1; }
+.shots { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -22px; padding: 4px 22px 8px; }
+.shots figure { margin: 0; flex: 0 0 62%; scroll-snap-align: center; }
+.shots img { width: 100%; height: auto; display: block; border-radius: 22px; border: 1px solid var(--line); box-shadow: 0 10px 24px -16px rgba(16,44,56,.5); }
+.shots figcaption { font-size: 13px; color: var(--muted); margin-top: 8px; text-align: center; }
+.rows { display: grid; gap: 10px; }
+.row { display: grid; grid-template-columns: 36px 1fr; gap: 12px; align-items: start; background: var(--soft); border-radius: 14px; padding: 14px; }
+.row .ic { width: 36px; height: 36px; border-radius: 10px; background: var(--bg); color: var(--teal); display: grid; place-items: center; font-weight: 900; }
+.row .t { font-weight: 700; }
+.row .d { font-size: 14px; color: var(--muted); }
+.q { display: grid; gap: 10px; }
+.q-title { font-weight: 700; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { font: inherit; font-size: 15px; font-weight: 500; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 999px; padding: 9px 15px; cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--teal); border-color: var(--teal); color: #fff; }
+.price { border: 2px solid var(--teal); border-radius: 16px; padding: 16px; background: var(--tint); display: grid; gap: 4px; }
+.price .amt { font-size: 26px; font-weight: 900; color: var(--teal-dark); }
+.price .note { font-size: 14px; color: var(--muted); }
+.btn { font: inherit; font-weight: 700; font-size: 17px; border: 0; border-radius: 14px; padding: 16px; width: 100%; cursor: pointer; background: var(--teal); color: #fff; }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn.ghost { background: var(--bg); color: var(--teal); border: 1.5px solid var(--teal); }
+.btn.link { background: none; color: var(--muted); font-weight: 500; font-size: 15px; padding: 10px; }
+.input { font: inherit; font-size: 16px; color: var(--ink); background: var(--bg); border: 1.5px solid var(--line); border-radius: 12px; padding: 14px; width: 100%; }
+.input:focus, .chip:focus-visible, .btn:focus-visible { outline: 3px solid rgba(8,127,130,.35); outline-offset: 2px; }
+.check { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: 14px; color: var(--muted); align-items: start; }
+.check input { width: 20px; height: 20px; margin: 1px 0 0; accent-color: var(--teal); }
+.err { color: var(--warn); font-size: 14px; min-height: 1.2em; }
+.choice { display: grid; gap: 4px; text-align: left; font: inherit; border: 1.5px solid var(--line); background: var(--bg); border-radius: 16px; padding: 16px; cursor: pointer; color: var(--ink); }
+.choice.main { border: 2px solid var(--teal); background: var(--tint); }
+.choice .t { font-weight: 700; font-size: 17px; }
+.choice .d { font-size: 14px; color: var(--muted); }
+.choice .tag { font-size: 12px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .06em; }
+.consent { border: 1.5px solid var(--line); border-radius: 16px; padding: 18px; display: grid; gap: 12px; }
+.consent ul { margin: 0; padding-left: 20px; display: grid; gap: 6px; font-size: 15px; }
+.consent .h { font-weight: 700; font-size: 14px; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.done-mark { width: 64px; height: 64px; border-radius: 50%; background: var(--tint); color: var(--teal); display: grid; place-items: center; font-size: 34px; font-weight: 900; }
+.foot { padding: 0 22px 22px; font-size: 12px; color: var(--muted); }
+.share { display: flex; gap: 8px; }
+.share .input { font-size: 13px; padding: 10px; }
+.share .btn { width: auto; padding: 10px 14px; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="preview" id="preview" hidden><b>Preview mode.</b> Nothing is saved until the Google Sheet link is added.</div>
+
+  <!-- 0 · Welcome -->
+  <section class="screen" data-step="0" data-name="welcome">
+    <div class="top"><div class="logo"><i></i>Care Navigator</div><span class="small">NYC pilot</span></div>
+    <h1 class="hero">A care plan for your whole family, and an agent that books the visits.</h1>
+    <p class="sub">See what each person is due for, what it costs under your plan, and let us call the doctor’s office. You approve every step.</p>
+    <div class="shots" aria-label="Screens from the app">
+      <figure><img src="img/plan.jpg" alt="Care plan screen showing four vaccines due for a 4-year-old" width="482" height="1023"><figcaption>What’s due, for each child</figcaption></figure>
+      <figure><img src="img/calling.jpg" alt="Agent calling in-network practices to book a visit" width="482" height="1023" loading="lazy"><figcaption>We make the calls</figcaption></figure>
+      <figure><img src="img/booked.jpg" alt="Visit booked, covered in-network, $25 copay" width="482" height="1023" loading="lazy"><figcaption>Booked, in-network, cost shown</figcaption></figure>
+    </div>
+    <div class="spacer"></div>
+    <button class="btn" data-go="screen">See if it’s for you</button>
+    <p class="small" style="text-align:center;margin:0">Takes about a minute.</p>
+  </section>
+
+  <!-- 1 · Screening -->
+  <section class="screen" data-step="1" data-name="screening">
+    <div class="top"><button class="back" data-back aria-label="Back">‹</button><span class="small">Step 1 of 3</span></div>
+    <div class="track"><b style="width:33%"></b></div>
+    <h1>First, a few quick questions</h1>
+    <div class="q" data-field="in_nyc"><div class="q-title">Do you live in New York City?</div>
+      <div class="chips"><button class="chip" data-v="yes">Yes</button><button class="chip" data-v="no">No</button></div></div>
+    <div class="q" data-field="has_child"><div class="q-title">Do you have a child under 13?</div>
+      <div class="chips"><button class="chip" data-v="yes">Yes</button><button class="chip" data-v="no">No</button></div></div>
+    <div class="q" data-field="employer_ins"><div class="q-title">Is your family’s health insurance through an employer (yours or a partner’s)?</div>
+      <div class="chips"><button class="chip" data-v="yes">Yes</button><button class="chip" data-v="no">No</button><button class="chip" data-v="unsure">Not sure</button></div></div>
+    <div class="spacer"></div>
+    <button class="btn" id="screenNext" disabled>Continue</button>
+  </section>
+
+  <!-- 2 · Not eligible -->
+  <section class="screen" data-step="2" data-name="not_eligible">
+    <div class="top"><div class="logo"><i></i>Care Navigator</div></div>
+    <h1>Thank you. We’re starting small.</h1>
+    <p class="sub">The first pilot is for New York City families with a child under 13 and insurance through an employer. Want us to tell you when we open more widely?</p>
+    <input class="input" id="laterEmail" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Email">
+    <div class="err" id="laterErr"></div>
+    <button class="btn ghost" id="laterBtn">Tell me later</button>
+    <div class="spacer"></div>
+  </section>
+
+  <!-- 3 · Offer (price test) -->
+  <section class="screen" data-step="3" data-name="offer">
+    <div class="top"><button class="back" data-back aria-label="Back">‹</button><span class="small">Step 2 of 3</span></div>
+    <div class="track"><b style="width:66%"></b></div>
+    <h1>Here’s what your family gets</h1>
+    <div class="rows">
+      <div class="row"><div class="ic">1</div><div><div class="t">A plan for every family member</div><div class="d">Vaccines, check-ups and screenings due, built from the CDC’s published schedules.</div></div></div>
+      <div class="row"><div class="ic">2</div><div><div class="t">We call and book in-network</div><div class="d">Our agent finds practices your plan covers, calls them, and books the time you choose.</div></div></div>
+      <div class="row"><div class="ic">3</div><div><div class="t">You approve every step</div><div class="d">Nothing is booked or shared without your OK.</div></div></div>
+    </div>
+    <div class="price" id="priceBox"></div>
+    <div class="spacer"></div>
+    <button class="btn" data-go="email">Reserve my spot</button>
+  </section>
+
+  <!-- 4 · Email -->
+  <section class="screen" data-step="4" data-name="email">
+    <div class="top"><button class="back" data-back aria-label="Back">‹</button><span class="small">Step 3 of 3</span></div>
+    <div class="track"><b style="width:100%"></b></div>
+    <h1>Where should we send your invite?</h1>
+    <p class="sub">We’ll email you when your family’s spot opens.</p>
+    <input class="input" id="email" type="email" inputmode="email" autocomplete="email" placeholder="you@email.com" aria-label="Email">
+    <label class="check"><input type="checkbox" id="agree"><span>I agree to be emailed about the Care Navigator pilot. We never sell or share your email.</span></label>
+    <div class="err" id="emailErr"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="reserveBtn">Reserve my spot</button>
+    <p class="small" id="payNote" style="text-align:center;margin:0">No payment now.</p>
+  </section>
+
+  <!-- 5 · Reserved + records choice (card 2) -->
+  <section class="screen" data-step="5" data-name="reserved">
+    <div class="done-mark">✓</div>
+    <h1>You’re on the list</h1>
+    <p class="sub">Next: build your family’s plan. How would you like to start?</p>
+    <button class="choice main" id="chooseConnect"><span class="tag">Fastest, most complete</span><span class="t">Connect my child’s records</span><span class="d">We read vaccines and check-ups from your child’s doctor or patient portal.</span></button>
+    <button class="choice" id="chooseQuestions"><span class="t">Answer 5 questions instead</span><span class="d">No records needed. We’ll email a first plan within 48 hours.</span></button>
+    <div class="spacer"></div>
+  </section>
+
+  <!-- 6 · Consent (random version) -->
+  <section class="screen" data-step="6" data-name="consent">
+    <div class="top"><button class="back" data-back aria-label="Back">‹</button><span class="small">Connect records</span></div>
+    <h1 id="consentTitle"></h1>
+    <div class="consent" id="consentBody"></div>
+    <div class="spacer"></div>
+    <button class="btn" id="allowBtn">Allow</button>
+    <button class="btn link" id="notNowBtn">Not now</button>
+  </section>
+
+  <!-- 7 · Connect noted -->
+  <section class="screen" data-step="7" data-name="connect_noted">
+    <div class="done-mark">✓</div>
+    <h1>Got it. Linking opens with the pilot.</h1>
+    <p class="sub">We’ll email you a secure link to connect your child’s records when your spot opens. We haven’t read anything yet.</p>
+    <button class="btn ghost" id="toQuestions">Get a first plan now: 5 questions</button>
+    <div class="spacer"></div>
+    <div id="shareBox1"></div>
+  </section>
+
+  <!-- 8 · Questions (concierge) -->
+  <section class="screen" data-step="8" data-name="questions">
+    <div class="top"><button class="back" data-back aria-label="Back">‹</button><span class="small">5 questions</span></div>
+    <h1>Tell us about your child</h1>
+    <p class="small" style="margin:-8px 0 0">No names, no records. Just enough to build a first plan.</p>
+    <div class="q" data-field="child_age"><div class="q-title">1. How old is your child?</div>
+      <div class="chips"><button class="chip" data-v="0-1">Under 1</button><button class="chip" data-v="1-3">1–3</button><button class="chip" data-v="4-6">4–6</button><button class="chip" data-v="7-12">7–12</button></div></div>
+    <div class="q" data-field="last_checkup"><div class="q-title">2. When was their last check-up?</div>
+      <div class="chips"><button class="chip" data-v="lt1y">Less than a year ago</button><button class="chip" data-v="1-2y">1–2 years</button><button class="chip" data-v="gt2y">Over 2 years</button><button class="chip" data-v="unsure">Not sure</button></div></div>
+    <div class="q" data-field="vaccines"><div class="q-title">3. Are their vaccines up to date?</div>
+      <div class="chips"><button class="chip" data-v="yes">Yes</button><button class="chip" data-v="some">Some may be missing</button><button class="chip" data-v="unsure">Not sure</button></div></div>
+    <div class="q" data-field="insurer"><div class="q-title">4. Who is your insurer?</div>
+      <div class="chips"><button class="chip" data-v="aetna">Aetna</button><button class="chip" data-v="uhc">UnitedHealthcare</button><button class="chip" data-v="cigna">Cigna</button><button class="chip" data-v="empire">Empire BCBS</button><button class="chip" data-v="oxford">Oxford</button><button class="chip" data-v="other">Other</button></div></div>
+    <div class="q" data-field="book_for_me"><div class="q-title">5. If a visit is due, should our agent book it for you?</div>
+      <div class="chips"><button class="chip" data-v="yes">Yes, after I approve</button><button class="chip" data-v="no">No, just tell me</button></div></div>
+    <div class="spacer"></div>
+    <button class="btn" id="questionsBtn" disabled>Send me my plan</button>
+  </section>
+
+  <!-- 9 · Done -->
+  <section class="screen" data-step="9" data-name="done">
+    <div class="done-mark">✓</div>
+    <h1>Your first plan arrives within 48 hours</h1>
+    <p class="sub">It lists what’s due for your child under the CDC schedule. It isn’t medical advice: share it with your child’s doctor.</p>
+    <div class="spacer"></div>
+    <div id="shareBox2"></div>
+  </section>
+
+  <p class="foot">Care Navigator is a student pilot by Ruchelli Hawks and Bryan Sun at Cornell Tech (TECH 5900 Product Studio). It is not open yet, and no one is charged. We never ask for medical records on this page, and we never sell your data.</p>
+</div>
+
+<script>
+// ---------- settings ----------
+const CONFIG = {
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbxbDvqde-xAkCs0lb82SqU4d9nswezwEMTPSxj-Ln6KAs_1nXMsJIOoLYkrYs9EVdkS0w/exec",                       // paste the Google Apps Script web app URL here
+};
+// ---------- helpers ----------
+const qs = new URLSearchParams(location.search);
+const store = {
+  get(k) { try { return localStorage.getItem("cn_" + k); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem("cn_" + k, v); } catch (e) {} },
+};
+function rid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+function pick(name, options, forced) {
+  if (forced && options.includes(forced)) return forced;
+  const saved = store.get(name);
+  if (saved && options.includes(saved)) return saved;
+  const v = options[Math.floor(Math.random() * options.length)];
+  store.set(name, v);
+  return v;
+}
+const S = {
+  session_id: store.get("sid") || rid(),
+  started_at: new Date().toISOString(),
+  price_variant: pick("price", ["free", "12"], qs.get("p")),
+  consent_variant: pick("consent", ["plain", "detailed"], qs.get("c")),
+  source: (qs.get("src") || "").slice(0, 60),
+  ref_in: (qs.get("ref") || "").slice(0, 32),
+  test: qs.get("test") === "1" ? "yes" : "",
+  mobile: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "yes" : "no",
+  last_step: 0, step_name: "welcome",
+};
+store.set("sid", S.session_id);
+S.ref_code = S.session_id.slice(0, 6);
+window.__sent = [];
+
+function send(extra) {
+  Object.assign(S, extra || {});
+  const body = JSON.stringify(S);
+  window.__sent.push(JSON.parse(body));
+  if (!CONFIG.ENDPOINT) { console.log("[preview] would save", JSON.parse(body)); return; }
+  try {
+    fetch(CONFIG.ENDPOINT, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body, keepalive: true });
+  } catch (e) {}
+}
+if (!CONFIG.ENDPOINT) document.getElementById("preview").hidden = false;
+
+// ---------- navigation ----------
+const screens = [...document.querySelectorAll(".screen")];
+const byName = Object.fromEntries(screens.map(s => [s.dataset.name, s]));
+const history_ = [];
+function show(name, record = true) {
+  screens.forEach(s => s.classList.toggle("on", s.dataset.name === name));
+  const s = byName[name];
+  if (history_[history_.length - 1] !== name) history_.push(name);
+  window.scrollTo(0, 0);
+  if (record) {
+    const step = Number(s.dataset.step);
+    send({ step_name: name, last_step: Math.max(step, S.last_step || 0), ["seen_" + name]: "yes" });
+  }
+}
+document.querySelectorAll("[data-back]").forEach(b => b.addEventListener("click", () => {
+  history_.pop(); show(history_.pop() || "welcome", false);
+}));
+document.querySelector('[data-go="screen"]').addEventListener("click", () => show("screening"));
+document.querySelector('[data-go="email"]').addEventListener("click", () => { send({ clicked_reserve: "yes" }); show("email"); });
+
+// ---------- chip questions ----------
+function wireChips(container, onChange) {
+  container.querySelectorAll(".q").forEach(q => {
+    q.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => {
+      q.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", "false"));
+      c.setAttribute("aria-pressed", "true");
+      S[q.dataset.field] = c.dataset.v;
+      onChange();
+    }));
+  });
+}
+const scr = byName.screening;
+wireChips(scr, () => {
+  document.getElementById("screenNext").disabled = !(S.in_nyc && S.has_child && S.employer_ins);
+});
+document.getElementById("screenNext").addEventListener("click", () => {
+  S.eligible = (S.in_nyc === "yes" && S.has_child === "yes" && S.employer_ins !== "no") ? "yes" : "no";
+  show(S.eligible === "yes" ? "offer" : "not_eligible");
+});
+
+// ---------- price test (card 1) ----------
+const PRICE = {
+  free: { amt: "Free through your employer", note: "Offered as a benefit by your employer’s health plan, so it’s $0 to you." },
+  "12": { amt: "$12 a month for your family", note: "Covers every family member. Cancel anytime." },
+};
+document.getElementById("priceBox").innerHTML =
+  '<span class="amt">' + PRICE[S.price_variant].amt + '</span><span class="note">' + PRICE[S.price_variant].note + "</span>";
+document.getElementById("payNote").textContent = S.price_variant === "12"
+  ? "No payment now. We will never charge you without asking first."
+  : "No payment now.";
+
+// ---------- email / reservation ----------
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+document.getElementById("reserveBtn").addEventListener("click", () => {
+  const e = document.getElementById("email").value.trim();
+  const err = document.getElementById("emailErr");
+  if (!EMAIL_RE.test(e)) { err.textContent = "Please enter a valid email."; return; }
+  if (!document.getElementById("agree").checked) { err.textContent = "Please tick the box so we can email you."; return; }
+  err.textContent = "";
+  S.email = e.slice(0, 120); S.reserved = "yes"; S.reserved_at = new Date().toISOString();
+  show("reserved");
+});
+document.getElementById("laterBtn").addEventListener("click", () => {
+  const e = document.getElementById("laterEmail").value.trim();
+  const err = document.getElementById("laterErr");
+  if (!EMAIL_RE.test(e)) { err.textContent = "Please enter a valid email."; return; }
+  err.textContent = "Thanks, we’ll be in touch."; err.style.color = "var(--teal)";
+  send({ email: e.slice(0, 120), later_list: "yes" });
+  document.getElementById("laterBtn").disabled = true;
+});
+
+// ---------- records choice + consent test (card 2) ----------
+const CONSENT = {
+  plain: {
+    title: "Allow Care Navigator to read your child’s health records?",
+    body: "<p style='margin:0'>We use them to see which vaccines and check-ups are due.</p>",
+  },
+  detailed: {
+    title: "Here’s exactly what we read, and what we never touch",
+    body: "<div class='h'>We read</div><ul><li>Vaccines and dates</li><li>Check-ups and screenings</li><li>Your plan’s coverage for preventive care</li></ul>" +
+          "<div class='h'>We never</div><ul><li>Sell your data or share it with your employer</li><li>Book or share anything without your OK</li><li>Keep your data if you leave: disconnect anytime</li></ul>" +
+          "<p class='small' style='margin:0'>Built by Ruchelli Hawks and Bryan Sun, Cornell Tech.</p>",
+  },
+};
+document.getElementById("consentTitle").textContent = CONSENT[S.consent_variant].title;
+document.getElementById("consentBody").innerHTML = CONSENT[S.consent_variant].body;
+
+document.getElementById("chooseConnect").addEventListener("click", () => { S.records_choice = "connect"; show("consent"); });
+document.getElementById("chooseQuestions").addEventListener("click", () => { S.records_choice = "questions"; show("questions"); });
+document.getElementById("allowBtn").addEventListener("click", () => { S.consent_given = "yes"; show("connect_noted"); });
+document.getElementById("notNowBtn").addEventListener("click", () => { S.consent_given = "no"; show("questions"); });
+document.getElementById("toQuestions").addEventListener("click", () => { S.questions_after_connect = "yes"; show("questions"); });
+
+// ---------- questions (concierge plan) ----------
+const qsec = byName.questions;
+wireChips(qsec, () => {
+  document.getElementById("questionsBtn").disabled = !["child_age", "last_checkup", "vaccines", "insurer", "book_for_me"].every(k => S[k]);
+});
+document.getElementById("questionsBtn").addEventListener("click", () => { S.questions_done = "yes"; show("done"); });
+
+// ---------- share ----------
+function shareBox(id) {
+  const url = location.origin + location.pathname + "?ref=" + S.ref_code;
+  document.getElementById(id).innerHTML =
+    "<p class='small' style='margin:0 0 8px'>Know a NYC parent who’d want this?</p><div class='share'><input class='input' readonly value='" + url + "' aria-label='Invite link'><button class='btn' type='button'>Copy</button></div>";
+  const btn = document.querySelector("#" + id + " .btn");
+  btn.addEventListener("click", () => {
+    const inp = document.querySelector("#" + id + " .input");
+    inp.select();
+    try { navigator.clipboard.writeText(url); } catch (e) { try { document.execCommand("copy"); } catch (e2) {} }
+    btn.textContent = "Copied"; send({ shared: "yes" });
+  });
+}
+shareBox("shareBox1"); shareBox("shareBox2");
+
+show("welcome");
+</script>
+</body>
+</html>
