@@ -191,7 +191,7 @@ footer { padding: 30px 0 50px; font-size: 13px; color: var(--muted); border-top:
 <div class="wrap"><footer>Care Navigator is a student venture by Ruchelli Hawks and Bryan Sun at Cornell Tech (TECH 5900 Product Studio). The product is in development; screens are prototypes and dashboard figures are illustrative. Statistics: HHS Healthy People 2030; KFF 2023; AMN Healthcare 2025.</footer></div>
 
 <script>
-const CONFIG = { ENDPOINT: "" };   // same Google Apps Script web app URL as index.html
+const CONFIG = { ENDPOINT: "https://script.google.com/macros/s/AKfycbxbDvqde-xAkCs0lb82SqU4d9nswezwEMTPSxj-Ln6KAs_1nXMsJIOoLYkrYs9EVdkS0w/exec" };   // same Google Apps Script web app URL as index.html
 
 const qs = new URLSearchParams(location.search);
 const store = { get(k) { try { return localStorage.getItem("ce_" + k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem("ce_" + k, v); } catch (e) {} } };
