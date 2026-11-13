@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Care Navigator for Employers · NYC pilot</title>
+<meta name="description" content="Your families skip the care your plan already pays for. Care Navigator gives each family a care plan and an AI agent that books the visits. A Cornell Tech pilot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff; --ink: #102c38; --muted: #56666d; --line: #dbe3e0; --soft: #f4f6f3; --page: #f6f6f2;
+  --teal: #087f82; --teal-dark: #04606a; --tint: #e4f2ef; --deep: #102c38; --mint: #8fe0cf;
+  --coral: #e8664a; --coral-dark: #cc5034; --warn: #b4553c;
+  --font: "Roboto", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 17px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+.preview { background: #fdefdc; color: var(--muted); font-size: 13px; text-align: center; padding: 8px; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; }
+.logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+.plus { width: 30px; height: 30px; border-radius: 8px; background: var(--teal); position: relative; flex: none; }
+.plus::before, .plus::after { content: ""; position: absolute; background: #fff; border-radius: 2px; left: 50%; top: 50%; transform: translate(-50%,-50%); }
+.plus::before { width: 15px; height: 3.6px; } .plus::after { width: 3.6px; height: 15px; }
+.nav-r { display: flex; align-items: center; gap: 18px; font-size: 15px; }
+.nav-r span { color: var(--muted); }
+.btn { display: inline-block; font: inherit; font-weight: 700; font-size: 17px; border: 0; border-radius: 14px; padding: 15px 24px; cursor: pointer; background: var(--coral); color: #fff; text-decoration: none; text-align: center; box-shadow: 0 10px 22px -14px rgba(232,102,74,.95); }
+.btn:hover { background: var(--coral-dark); }
+.btn.small { padding: 10px 16px; font-size: 15px; }
+.btn.ghost { background: transparent; color: var(--teal); border: 1.5px solid var(--teal); box-shadow: none; }
+.btn.link { background: none; color: var(--muted); box-shadow: none; font-weight: 500; text-decoration: underline; padding: 10px; }
+.btn:disabled { opacity: .45; cursor: default; }
+/* hero */
+.hero { display: grid; grid-template-columns: 1fr 1.15fr; gap: 48px; align-items: center; padding: 30px 0 60px; }
+.kicker { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--teal); }
+h1 { font-size: 48px; line-height: 1.04; font-weight: 900; letter-spacing: -.03em; margin: 12px 0 16px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--teal); }
+.lead { font-size: 19px; color: var(--muted); margin: 0 0 26px; max-width: 34em; }
+.hero-cta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+.hero img { width: 100%; height: auto; display: block; border-radius: 14px; box-shadow: 0 30px 60px -30px rgba(16,44,56,.45); border: 1px solid var(--line); }
+.cap { font-size: 13px; color: var(--muted); margin-top: 10px; text-align: center; }
+section { padding: 64px 0; }
+h2 { font-size: 34px; line-height: 1.1; font-weight: 900; letter-spacing: -.02em; margin: 8px 0 14px; text-wrap: balance; }
+.intro { color: var(--muted); font-size: 18px; max-width: 40em; margin: 0 0 32px; }
+/* problem */
+.dark { background: var(--deep); color: #fff; }
+.dark .kicker { color: var(--mint); } .dark .intro { color: #b8cbd0; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.stat { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); border-radius: 18px; padding: 24px; }
+.stat b { display: block; font-size: 52px; line-height: 1; font-weight: 900; color: var(--mint); }
+.stat p { margin: 12px 0 10px; font-size: 17px; }
+.stat small { font-size: 12.5px; color: #9fb5bb; }
+/* how it works */
+.how { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+.how figure { margin: 0; }
+.how .num { font-size: 13px; font-weight: 700; letter-spacing: .08em; color: var(--teal); text-transform: uppercase; }
+.how h3 { font-size: 19px; margin: 6px 0 4px; }
+.how p { font-size: 15px; color: var(--muted); margin: 0 0 14px; min-height: 3em; }
+.how img { width: 100%; height: auto; display: block; border-radius: 22px; box-shadow: 0 16px 30px -20px rgba(16,44,56,.6); }
+/* compare */
+.compare { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.col { border-radius: 18px; padding: 26px; border: 1px solid var(--line); background: var(--soft); }
+.col.us { background: var(--tint); border: 2px solid var(--teal); }
+.col h3 { margin: 0 0 14px; font-size: 20px; }
+.col ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.col li { display: flex; gap: 10px; font-size: 16px; }
+.col li::before { content: "–"; color: var(--muted); font-weight: 900; flex: none; width: 18px; }
+.col.us li::before { content: "✓"; color: var(--teal); }
+.privacy { margin-top: 18px; background: var(--deep); color: #fff; border-radius: 16px; padding: 18px 22px; font-size: 16px; }
+.privacy b { color: var(--mint); }
+/* pilot */
+.pilot { background: var(--page); }
+.pgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+.offer { background: #fff; border-radius: 20px; border: 1px solid var(--line); padding: 28px; }
+.offer .price { font-size: 44px; font-weight: 900; color: var(--teal-dark); line-height: 1; margin: 6px 0 4px; }
+.offer .per { color: var(--muted); font-size: 15px; }
+.terms { list-style: none; padding: 0; margin: 20px 0 0; display: grid; gap: 10px; }
+.terms li { display: flex; gap: 10px; font-size: 16px; }
+.terms li::before { content: "✓"; flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--tint); color: var(--teal); display: grid; place-items: center; font-size: 13px; font-weight: 900; }
+.fine { font-size: 13.5px; color: var(--muted); margin-top: 18px; }
+form { background: #fff; border-radius: 20px; border: 1px solid var(--line); padding: 28px; display: grid; gap: 14px; }
+form h3 { margin: 0; font-size: 22px; }
+label.f { display: grid; gap: 6px; font-size: 14px; font-weight: 500; }
+.input, select { font: inherit; font-size: 16px; color: var(--ink); background: #fff; border: 1.5px solid var(--line); border-radius: 12px; padding: 13px 14px; width: 100%; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.input:focus, select:focus, .btn:focus-visible { outline: 3px solid rgba(8,127,130,.35); outline-offset: 2px; }
+.err { color: var(--warn); font-size: 14px; min-height: 1.2em; }
+.thanks { display: none; text-align: center; padding: 20px 10px; }
+.thanks .mark { width: 64px; height: 64px; border-radius: 50%; background: var(--tint); color: var(--teal); display: grid; place-items: center; font-size: 32px; font-weight: 900; margin: 0 auto 12px; }
+footer { padding: 30px 0 50px; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); }
+@media (max-width: 860px) {
+  h1 { font-size: 38px; } h2 { font-size: 28px; }
+  .hero, .pgrid, .compare { grid-template-columns: 1fr; }
+  .hero { gap: 28px; }
+  .stats { grid-template-columns: 1fr; }
+  .how { grid-template-columns: 1fr 1fr; }
+  .nav-r span { display: none; }
+  section { padding: 48px 0; }
+}
+@media (max-width: 480px) { .how { grid-template-columns: 1fr; } .how img { width: 70%; margin: 0 auto; } .two { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="preview" id="preview" hidden><b>Preview mode.</b> Nothing is saved until the Google Sheet link is added.</div>
+<div class="wrap">
+  <nav><div class="logo"><span class="plus"></span>Care Navigator <span style="font-weight:400;color:var(--muted)">for Employers</span></div>
+    <div class="nav-r"><span>NYC pilot · spring 2027</span><a class="btn small" href="#pilot" data-track="nav_cta">Reserve a pilot spot</a></div></nav>
+
+  <div class="hero">
+    <div>
+      <div class="kicker">For HR and benefits leaders</div>
+      <h1>Your families skip the care <em>your plan already pays for.</em></h1>
+      <p class="lead">Care Navigator gives every employee’s family a care plan and an AI agent that books the visits, in-network. You see the results. Never anyone’s health data.</p>
+      <div class="hero-cta"><a class="btn" href="#pilot" data-track="hero_cta">Reserve a pilot spot</a><a class="btn ghost" href="#how">See how it works</a></div>
+    </div>
+    <figure style="margin:0"><img src="img/dashboard.jpg" alt="Employer dashboard: enrollment, recommended care completed, visits booked, hours saved" width="1600" height="830"><figcaption class="cap">Your pilot dashboard: totals only. Illustrative data.</figcaption></figure>
+  </div>
+</div>
+
+<section class="dark"><div class="wrap">
+  <div class="kicker">The problem</div>
+  <h2>Coverage isn’t care.</h2>
+  <p class="intro">Your plan covers preventive care at $0, but families don’t know what’s due and can’t get through to book it. Skipped care today becomes expensive claims later.</p>
+  <div class="stats">
+    <div class="stat"><b>93%</b><p>of adults 35+ don’t get all their recommended preventive care</p><small>HHS, Healthy People 2030 (2022 data)</small></div>
+    <div class="stat"><b>58%</b><p>of insured adults had a problem using their coverage in the past year</p><small>KFF Survey of Consumer Experiences, 2023</small></div>
+    <div class="stat"><b>31 days</b><p>average wait for a doctor’s appointment</p><small>AMN Healthcare survey, 2025</small></div>
+  </div>
+</div></section>
+
+<section id="how"><div class="wrap">
+  <div class="kicker">How it works</div>
+  <h2>From each family’s data to a booked visit</h2>
+  <p class="intro">We start from each person’s records and published guidelines, then act. The employee approves every step.</p>
+  <div class="how">
+    <figure><div class="num">1 · Collect</div><h3>Their data, their choice</h3><p>Records, insurance and goals, connected with consent.</p><img src="img/connect.jpg" alt="Connect family data screen" loading="lazy" width="482" height="1023"></figure>
+    <figure><div class="num">2 · Match</div><h3>Matched to guidelines</h3><p>CDC and USPSTF schedules, clinical guidelines.</p><img src="img/match.jpg" alt="Results matched to guidelines" loading="lazy" width="482" height="1023"></figure>
+    <figure><div class="num">3 · Plan</div><h3>A plan for each person</h3><p>What’s due, why, and the cost under your plan.</p><img src="img/family.jpg" alt="Family care plan with costs" loading="lazy" width="482" height="1023"></figure>
+    <figure><div class="num">4 · Act</div><h3>The agent books it</h3><p>Calls offices, books in-network, sends reminders.</p><img src="img/calling.jpg" alt="Agent calling practices" loading="lazy" width="482" height="1023"></figure>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="kicker">Why it’s different</div>
+  <h2>Navigators wait for a call. We act first.</h2>
+  <div class="compare">
+    <div class="col"><h3>Typical navigation service</h3><ul><li>Starts when the employee calls or chats</li><li>Works from claims, after care happened</li><li>Human advocates, priced for human labor</li></ul></div>
+    <div class="col us"><h3>Care Navigator</h3><ul><li>Starts from each family’s records, before care is missed</li><li>A care plan for every family member</li><li>An AI agent books the visits; people handle exceptions</li></ul></div>
+  </div>
+  <div class="privacy">🔒 <b>Built for trust.</b> Employees approve every step. You see totals only, never an individual’s health information. HIPAA and SOC 2 before launch.</div>
+</div></section>
+
+<section class="pilot" id="pilot"><div class="wrap">
+  <div class="kicker">The pilot</div>
+  <h2>Reserve a spot in our spring 2027 pilot</h2>
+  <p class="intro">We’re selecting a small number of New York employers.</p>
+  <div class="pgrid">
+    <div class="offer" id="offer">
+      <div class="kicker">Pilot price</div>
+      <div class="price" id="price"></div>
+      <div class="per">per employee per month (PEPM), families included</div>
+      <ul class="terms">
+        <li>3-month pilot for up to 500 employees and their families</li>
+        <li>Starts with vaccines, check-ups and screenings</li>
+        <li>Judged by one number: the share of recommended care completed</li>
+        <li>A dashboard with totals, never personal health data</li>
+      </ul>
+      <p class="fine">Reserving is non-binding: you pay only if you later sign a pilot agreement. Care Navigator is a Cornell Tech student venture; the product is in development.</p>
+    </div>
+    <form id="form" novalidate>
+      <h3>Reserve a pilot spot</h3>
+      <div class="two"><label class="f">Your name<input class="input" id="f_name" autocomplete="name"></label><label class="f">Work email<input class="input" id="f_email" type="email" autocomplete="email"></label></div>
+      <div class="two"><label class="f">Job title<input class="input" id="f_title" autocomplete="organization-title"></label><label class="f">Company<input class="input" id="f_company" autocomplete="organization"></label></div>
+      <div class="two">
+        <label class="f">Employees<select id="f_size"><option value="">Choose…</option><option>1–49</option><option>50–499</option><option>500–4,999</option><option>5,000+</option></select></label>
+        <label class="f">Health plan funding<select id="f_funding"><option value="">Choose…</option><option value="self">Self-insured</option><option value="fully">Fully insured</option><option value="unsure">Not sure</option></select></label>
+      </div>
+      <label class="f">Navigation service you use today<select id="f_nav"><option value="">Choose…</option><option value="none">None</option><option value="transcarent">Transcarent / Accolade</option><option value="quantum">Quantum Health</option><option value="included">Included Health</option><option value="apree">apree health</option><option value="other">Other</option></select></label>
+      <div class="err" id="err"></div>
+      <button class="btn" type="submit" id="reserveBtn">Reserve a pilot spot</button>
+      <button class="btn link" type="button" id="laterBtn">Not now: just keep me posted</button>
+    </form>
+    <div class="offer thanks" id="thanks"><div class="mark">✓</div><h3 style="margin:0 0 8px">Thank you. Your spot is reserved.</h3><p class="fine" id="thanksText" style="margin:0">We’ll email you within two business days to set up a short call.</p></div>
+  </div>
+</div></section>
+
+<div class="wrap"><footer>Care Navigator is a student venture by Ruchelli Hawks and Bryan Sun at Cornell Tech (TECH 5900 Product Studio). The product is in development; screens are prototypes and dashboard figures are illustrative. Statistics: HHS Healthy People 2030; KFF 2023; AMN Healthcare 2025.</footer></div>
+
+<script>
+const CONFIG = { ENDPOINT: "" };   // same Google Apps Script web app URL as index.html
+
+const qs = new URLSearchParams(location.search);
+const store = { get(k) { try { return localStorage.getItem("ce_" + k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem("ce_" + k, v); } catch (e) {} } };
+function rid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+function pick(name, options, forced) {
+  if (forced && options.includes(forced)) return forced;
+  const saved = store.get(name); if (saved && options.includes(saved)) return saved;
+  const v = options[Math.floor(Math.random() * options.length)]; store.set(name, v); return v;
+}
+const S = {
+  page: "employer", session_id: store.get("sid") || rid(), started_at: new Date().toISOString(),
+  price_variant: pick("price", ["2", "4"], qs.get("p")),
+  source: (qs.get("src") || "").slice(0, 60), ref_in: (qs.get("ref") || "").slice(0, 32),
+  test: qs.get("test") === "1" ? "yes" : "", mobile: /Mobi|Android|iPhone/i.test(navigator.userAgent) ? "yes" : "no",
+  opened: "yes",
+};
+store.set("sid", S.session_id);
+window.__sent = [];
+function send(extra) {
+  Object.assign(S, extra || {}); const body = JSON.stringify(S); window.__sent.push(JSON.parse(body));
+  if (!CONFIG.ENDPOINT) { console.log("[preview] would save", JSON.parse(body)); return; }
+  try { fetch(CONFIG.ENDPOINT, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body, keepalive: true }); } catch (e) {}
+}
+if (!CONFIG.ENDPOINT) document.getElementById("preview").hidden = false;
+
+document.getElementById("price").textContent = "$" + S.price_variant;
+send();   // page opened
+
+// saw the price: the offer box came into view
+const seen = new IntersectionObserver(es => { if (es.some(e => e.isIntersecting)) { send({ saw_price: "yes" }); seen.disconnect(); } }, { threshold: 0.5 });
+seen.observe(document.getElementById("offer"));
+document.querySelectorAll("[data-track]").forEach(a => a.addEventListener("click", () => send({ clicked_cta: "yes" })));
+let started = false;
+document.getElementById("form").addEventListener("input", () => { if (!started) { started = true; send({ started_form: "yes" }); } });
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const val = id => document.getElementById(id).value.trim();
+function done(text) { document.getElementById("form").style.display = "none"; const t = document.getElementById("thanks"); t.style.display = "block"; if (text) document.getElementById("thanksText").textContent = text; }
+document.getElementById("form").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const err = document.getElementById("err");
+  const need = ["f_name", "f_email", "f_title", "f_company", "f_size", "f_funding", "f_nav"];
+  if (need.some(id => !val(id))) { err.textContent = "Please fill in every field."; return; }
+  if (!EMAIL_RE.test(val("f_email"))) { err.textContent = "Please enter a valid work email."; return; }
+  err.textContent = "";
+  send({ reserved: "yes", reserved_at: new Date().toISOString(), name: val("f_name").slice(0, 80), email: val("f_email").slice(0, 120),
+         title: val("f_title").slice(0, 80), company: val("f_company").slice(0, 100), size: val("f_size"), funding: val("f_funding"), navigator: val("f_nav") });
+  done();
+});
+document.getElementById("laterBtn").addEventListener("click", () => {
+  const err = document.getElementById("err");
+  if (!EMAIL_RE.test(val("f_email"))) { err.textContent = "Add your work email above and we’ll keep you posted."; return; }
+  send({ keep_posted: "yes", email: val("f_email").slice(0, 120), company: val("f_company").slice(0, 100), size: val("f_size"), funding: val("f_funding"), navigator: val("f_nav") });
+  done("Thanks. We’ll send you pilot updates, nothing more.");
+});
+</script>
+</body>
+</html>
